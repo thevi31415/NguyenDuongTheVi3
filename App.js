@@ -51,14 +51,8 @@ function CustomLap({ number, interval, fastest, slowest }) {
 
 function CustomLapsTable({ laps, timer }) {
   const finishedLaps = laps.slice(1);
-  let min = Number.MAX_SAFE_INTEGER;
-  let max = Number.MIN_SAFE_INTEGER;
-  if (finishedLaps.length >= 2) {
-    finishedLaps.forEach((lap) => {
-      if (lap < min) min = lap;
-      if (lap > max) max = lap;
-    });
-  }
+  const min = Math.min(...finishedLaps);
+  const max = Math.max(...finishedLaps);
   return (
     <ScrollView style={styles.scrollView}>
       {laps.map((lap, index) => (
@@ -85,22 +79,38 @@ export default class App extends Component {
       start: 0,
       now: 0,
       laps: [],
+      timer: null,
     };
   }
+
   componentWillUnmount() {
-    clearInterval(this.timer);
+    clearInterval(this.state.timer);
   }
 
-  begin = () => {
-    const now = new Date().getTime();
-    this.setState({
-      start: now,
-      now,
-      laps: [0],
-    });
-    this.timer = setInterval(() => {
-      this.setState({ now: new Date().getTime() });
+  startTimer = () => {
+    const timer = setInterval(() => {
+      this.setState((prevState) => ({
+        now: new Date().getTime(),
+      }));
     }, 100);
+    this.setState({
+      start: new Date().getTime(),
+      now: new Date().getTime(),
+      laps: [0],
+      timer,
+    });
+  };
+
+  pauseTimer = () => {
+    clearInterval(this.state.timer);
+    const { laps, now, start } = this.state;
+    const [firstLap, ...other] = laps;
+    this.setState({
+      laps: [firstLap + now - start, ...other],
+      start: 0,
+      now: 0,
+      timer: null,
+    });
   };
 
   snapshot = () => {
@@ -114,33 +124,29 @@ export default class App extends Component {
     });
   };
 
-  pause = () => {
-    clearInterval(this.timer);
-    const { laps, now, start } = this.state;
-    const [firstLap, ...other] = laps;
+  continueTimer = () => {
+    const timer = setInterval(() => {
+      this.setState((prevState) => ({
+        now: new Date().getTime(),
+      }));
+    }, 100);
     this.setState({
-      laps: [firstLap + now - start, ...other],
-      start: 0,
-      now: 0,
+      start: new Date().getTime(),
+      now: new Date().getTime(),
+      timer,
     });
   };
-  reset = () => {
+
+  resetTimer = () => {
+    clearInterval(this.state.timer);
     this.setState({
       laps: [],
       start: 0,
       now: 0,
+      timer: null, // Reset ID của timer
     });
   };
-  continue = () => {
-    const now = new Date().getTime();
-    this.setState({
-      start: now,
-      now,
-    });
-    this.timer = setInterval(() => {
-      this.setState({ now: new Date().getTime() });
-    }, 100);
-  };
+
   render() {
     const { now, start, laps } = this.state;
     const timer = now - start;
@@ -162,7 +168,7 @@ export default class App extends Component {
               title="Start"
               color="#50D167"
               background="#1B361F"
-              onPress={this.begin}
+              onPress={this.startTimer} // Gọi hàm bắt đầu bộ đếm mới
             />
           </CustomButtonsRow>
         )}
@@ -178,7 +184,7 @@ export default class App extends Component {
               title="Stop"
               color="#E33935"
               background="#3C1715"
-              onPress={this.pause}
+              onPress={this.pauseTimer} // Gọi hàm tạm dừng bộ đếm
             />
           </CustomButtonsRow>
         )}
@@ -188,13 +194,13 @@ export default class App extends Component {
               title="Reset"
               color="#FFFFFF"
               background="#3D3D3D"
-              onPress={this.reset}
+              onPress={this.resetTimer} // Gọi hàm reset bộ đếm
             />
             <CustomRoundButton
-              title="Continue"
+              title="Start"
               color="#50D167"
               background="#1B361F"
-              onPress={this.continue}
+              onPress={this.continueTimer} // Gọi hàm tiếp tục bộ đếm
             />
           </CustomButtonsRow>
         )}
