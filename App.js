@@ -153,13 +153,13 @@ export default class App extends Component {
         {laps.length === 0 && (
           <CustomButtonsRow>
             <CustomRoundButton
-              title="Snapshot"
+              title="Lap"
               color="#8B8B90"
               background="#151515"
               disabled
             />
             <CustomRoundButton
-              title="Begin"
+              title="Start"
               color="#50D167"
               background="#1B361F"
               onPress={this.begin}
@@ -169,13 +169,13 @@ export default class App extends Component {
         {start > 0 && (
           <CustomButtonsRow>
             <CustomRoundButton
-              title="Snapshot"
+              title="Lap"
               color="#FFFFFF"
               background="#3D3D3D"
               onPress={this.snapshot}
             />
             <CustomRoundButton
-              title="Pause"
+              title="Stop"
               color="#E33935"
               background="#3C1715"
               onPress={this.pause}
