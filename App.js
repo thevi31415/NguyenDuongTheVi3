@@ -143,7 +143,7 @@ export default class App extends Component {
       laps: [],
       start: 0,
       now: 0,
-      timer: null, // Reset ID của timer
+      timer: null,
     });
   };
 
@@ -168,7 +168,7 @@ export default class App extends Component {
               title="Start"
               color="#50D167"
               background="#1B361F"
-              onPress={this.startTimer} // Gọi hàm bắt đầu bộ đếm mới
+              onPress={this.startTimer}
             />
           </CustomButtonsRow>
         )}
@@ -184,7 +184,7 @@ export default class App extends Component {
               title="Stop"
               color="#E33935"
               background="#3C1715"
-              onPress={this.pauseTimer} // Gọi hàm tạm dừng bộ đếm
+              onPress={this.pauseTimer}
             />
           </CustomButtonsRow>
         )}
@@ -194,13 +194,13 @@ export default class App extends Component {
               title="Reset"
               color="#FFFFFF"
               background="#3D3D3D"
-              onPress={this.resetTimer} // Gọi hàm reset bộ đếm
+              onPress={this.resetTimer}
             />
             <CustomRoundButton
               title="Start"
               color="#50D167"
               background="#1B361F"
-              onPress={this.continueTimer} // Gọi hàm tiếp tục bộ đếm
+              onPress={this.continueTimer}
             />
           </CustomButtonsRow>
         )}
