@@ -1,3 +1,4 @@
+import React, { Component } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,20 +8,20 @@ import {
 } from "react-native";
 import moment from "moment";
 
-function Timer({ interval, style }) {
+function CustomTimer({ interval, style }) {
   const pad = (n) => (n < 10 ? "0" + n : n);
   const duration = moment.duration(interval);
-  const centiseconds = Math.floor(duration.milliseconds() / 10);
+  const hundredths = Math.floor(duration.milliseconds() / 10);
   return (
     <View style={styles.timerContainer}>
       <Text style={style}>{pad(duration.minutes())}:</Text>
       <Text style={style}>{pad(duration.seconds())},</Text>
-      <Text style={style}>{pad(centiseconds)}</Text>
+      <Text style={style}>{pad(hundredths)}</Text>
     </View>
   );
 }
 
-function RoundButton({ title, color, background, onPress, disabled }) {
+function CustomRoundButton({ title, color, background, onPress, disabled }) {
   return (
     <TouchableOpacity
       onPress={() => !disabled && onPress()}
@@ -33,7 +34,8 @@ function RoundButton({ title, color, background, onPress, disabled }) {
     </TouchableOpacity>
   );
 }
-function Lap({ number, interval, fastest, slowest }) {
+
+function CustomLap({ number, interval, fastest, slowest }) {
   const lapStyle = [
     styles.lapText,
     fastest && styles.fastest,
@@ -41,13 +43,13 @@ function Lap({ number, interval, fastest, slowest }) {
   ];
   return (
     <View style={styles.lap}>
-      <Text style={lapStyle}>Lap {number}</Text>
-      <Timer style={[lapStyle, styles.lapTimer]} interval={interval} />
+      <Text style={lapStyle}>Custom Lap {number}</Text>
+      <CustomTimer style={[lapStyle, styles.lapTimer]} interval={interval} />
     </View>
   );
 }
 
-function LapsTable({ laps, timer }) {
+function CustomLapsTable({ laps, timer }) {
   const finishedLaps = laps.slice(1);
   let min = Number.MAX_SAFE_INTEGER;
   let max = Number.MIN_SAFE_INTEGER;
@@ -60,7 +62,7 @@ function LapsTable({ laps, timer }) {
   return (
     <ScrollView style={styles.scrollView}>
       {laps.map((lap, index) => (
-        <Lap
+        <CustomLap
           number={laps.length - index}
           key={laps.length - index}
           interval={index === 0 ? timer + lap : lap}
@@ -72,9 +74,10 @@ function LapsTable({ laps, timer }) {
   );
 }
 
-function ButtonsRow({ children }) {
+function CustomButtonsRow({ children }) {
   return <View style={styles.buttonsRow}>{children}</View>;
 }
+
 export default class App extends Component {
   constructor(props) {
     super(props);
@@ -88,7 +91,7 @@ export default class App extends Component {
     clearInterval(this.timer);
   }
 
-  start = () => {
+  begin = () => {
     const now = new Date().getTime();
     this.setState({
       start: now,
@@ -100,7 +103,7 @@ export default class App extends Component {
     }, 100);
   };
 
-  lap = () => {
+  snapshot = () => {
     const timestamp = new Date().getTime();
     const { laps, now, start } = this.state;
     const [firstLap, ...other] = laps;
@@ -111,7 +114,7 @@ export default class App extends Component {
     });
   };
 
-  stop = () => {
+  pause = () => {
     clearInterval(this.timer);
     const { laps, now, start } = this.state;
     const [firstLap, ...other] = laps;
@@ -128,7 +131,7 @@ export default class App extends Component {
       now: 0,
     });
   };
-  resume = () => {
+  continue = () => {
     const now = new Date().getTime();
     this.setState({
       start: now,
@@ -143,59 +146,59 @@ export default class App extends Component {
     const timer = now - start;
     return (
       <View style={styles.container}>
-        <Timer
+        <CustomTimer
           interval={laps.reduce((total, curr) => total + curr, 0) + timer}
           style={styles.timer}
         />
         {laps.length === 0 && (
-          <ButtonsRow>
-            <RoundButton
-              title="Lap"
+          <CustomButtonsRow>
+            <CustomRoundButton
+              title="Snapshot"
               color="#8B8B90"
               background="#151515"
               disabled
             />
-            <RoundButton
-              title="Start"
+            <CustomRoundButton
+              title="Begin"
               color="#50D167"
               background="#1B361F"
-              onPress={this.start}
+              onPress={this.begin}
             />
-          </ButtonsRow>
+          </CustomButtonsRow>
         )}
         {start > 0 && (
-          <ButtonsRow>
-            <RoundButton
-              title="Lap"
+          <CustomButtonsRow>
+            <CustomRoundButton
+              title="Snapshot"
               color="#FFFFFF"
               background="#3D3D3D"
-              onPress={this.lap}
+              onPress={this.snapshot}
             />
-            <RoundButton
-              title="Stop"
+            <CustomRoundButton
+              title="Pause"
               color="#E33935"
               background="#3C1715"
-              onPress={this.stop}
+              onPress={this.pause}
             />
-          </ButtonsRow>
+          </CustomButtonsRow>
         )}
         {laps.length > 0 && start === 0 && (
-          <ButtonsRow>
-            <RoundButton
+          <CustomButtonsRow>
+            <CustomRoundButton
               title="Reset"
               color="#FFFFFF"
               background="#3D3D3D"
               onPress={this.reset}
             />
-            <RoundButton
-              title="Start"
+            <CustomRoundButton
+              title="Continue"
               color="#50D167"
               background="#1B361F"
-              onPress={this.resume}
+              onPress={this.continue}
             />
-          </ButtonsRow>
+          </CustomButtonsRow>
         )}
-        <LapsTable laps={laps} timer={timer} />
+        <CustomLapsTable laps={laps} timer={timer} />
       </View>
     );
   }
